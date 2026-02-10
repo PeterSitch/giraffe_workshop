@@ -28,10 +28,6 @@ st.set_page_config(page_title='Giraffe Workshop', page_icon='🦒', layout='wide
 st.title("Giraffe Workshop")
 
 
-#out_files = ['5','8','9','12']
-#out_files = 
-
-
 meas_sets = { 'Civco pos 1': (5,6),
         'Civco pos 2': (8,7),
         'Civco pos 3': (9,10),
@@ -40,17 +36,14 @@ meas_sets = { 'Civco pos 1': (5,6),
 
 
 with st.sidebar:
-    #st.write('')
 
-    mode = st.pills('Choose mode',['single','multi'])
+    st.image('gbp.png')
+    st.write("")
 
-    #if mode =='single':
+    st.write("")
+
+    mode = st.pills('Choose mode',['single','multi'], default='single')
     selected_set = st.selectbox('Choose measurement:',options = meas_sets, index=None,)
-
-    #if mode == 'multi':
-    #    sb1,sb2 = st.columns(2)
-    #    out_meas_num = sb1.selectbox('Choose measurement:',options = out_files, index=None,)
-    #    in_meas_num = sb2.selectbox('Choose measurement:',options = in_files, index=None,)
 
 if selected_set is not None:
 
@@ -60,8 +53,7 @@ if selected_set is not None:
 
     
 
-
-        if st.toggle('Normalise'):
+        if st.toggle('Normalise to max'):
             ys = ys/np.max(ys)
             extrap_poss = True
             signal_type = "Proportion of max"
@@ -70,7 +62,7 @@ if selected_set is not None:
             signal_type = "Counts"
 
 
-        extrap =  st.toggle('Extrapolate', disabled = not extrap_poss)
+        extrap =  st.toggle('Add interpolated values', disabled = not extrap_poss)
 
         if extrap:
 
@@ -149,9 +141,10 @@ if selected_set is not None:
         else:
 
 
-            in_shift = st.number_input('Amount to shift in set by (mm)',value=0.0)
+            c1,c2 = st.columns(2)
+            in_shift = c1.number_input('Amount to shift in set by (mm)',value=0.0)
 
-            range = st.select_slider('select data to plot',out_xs, value=(out_xs[0],out_xs[-1]))
+            range = c2.select_slider('Select data to plot',out_xs, value=(out_xs[0],out_xs[-1]))
 
             
             out_xs_arr = np.array(out_xs, dtype=float)
@@ -172,8 +165,8 @@ if selected_set is not None:
             in_mask = (in_xs_arr >= range[0]) & (in_xs_arr <= range[1])
 
             fig = go.Figure()
-            fig.add_trace(go.Scatter( x=out_xs_arr[out_mask], y=out_ys_arr[out_mask], mode="markers", name="Measurements", marker=dict(size=5, color="blue"), uid='trace_out'))
-            fig.add_trace(go.Scatter( x=in_xs_arr[in_mask], y=in_ys_arr[in_mask], mode="markers", name="Measurements", marker=dict(size=5, color="green"), uid='trace_in') )
+            fig.add_trace(go.Scatter( x=out_xs_arr[out_mask], y=out_ys_arr[out_mask], mode="markers", name="Plate out measurements", marker=dict(size=5, color="blue"), uid='trace_out'))
+            fig.add_trace(go.Scatter( x=in_xs_arr[in_mask], y=in_ys_arr[in_mask], mode="markers", name="Plate in measurements", marker=dict(size=5, color="goldenrod"), uid='trace_in') )
 
         
 
@@ -185,7 +178,7 @@ if selected_set is not None:
             
 
         
-        if st.toggle('Normalise'):
+        if st.toggle('Normalise to max'):
             ys = ys/np.max(ys)
             extrap_poss = True
             signal_type = "Proportion of max"
@@ -193,7 +186,7 @@ if selected_set is not None:
             extrap_poss = False
             signal_type = "Counts"
 
-        extrap =  st.toggle('Extrapolate', disabled = not extrap_poss)
+        extrap =  st.toggle('Add interpolated values', disabled = not extrap_poss)
 
         if extrap:
 
